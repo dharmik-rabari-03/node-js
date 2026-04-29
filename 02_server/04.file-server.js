@@ -19,5 +19,5 @@ server.listen(port, (err) => {
     return;
   }
 
-  console.log("server is already running");
+  console.log("server is running");
 });
