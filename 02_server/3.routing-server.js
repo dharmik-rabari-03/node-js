@@ -2,7 +2,7 @@ import http from "http";
 
 const server = http.createServer((req, res) => {
   if (req.url === "/") {
-    res.writeHead(404, { "content-type": "text/html" });
+    res.writeHead(200, { "content-type": "text/html" });
     res.end(
       ` <html>
         <body style="margin:0; display:flex; justify-content:center; height:100vh;">
@@ -22,7 +22,7 @@ const server = http.createServer((req, res) => {
       </html>`,
     );
   } else {
-    res.writeHead(404, { "content-type": "text/html" });
+    res.writeHead(200, { "content-type": "text/html" });
     res.end(`
   <html>
     <body style="margin:0; display:flex; justify-content:center; align-items:center; height:100vh;">
