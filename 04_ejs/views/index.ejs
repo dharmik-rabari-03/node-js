@@ -24,9 +24,23 @@
 
             <ul class="mb-3">
                 <% studentList.forEach((s)=>{ %>
-                    <li class="d-flex align-items-center">
-                       
+                    <li class="d-flex justify-content-between align-items-center mb-2">
+
+                        <span>
                             <%= s.name %>
+                        </span>
+                        <div>
+
+                            <a href="/edit/<%= s.id %>" class="btn btn-outline-warning">
+                                Edit
+                            </a>
+
+
+                            <form action="/delete/<%= s.id %>" method="POST" style="display: inline;">
+                                <button class=" btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </div>
+
                     </li>
                     <% }) %>
             </ul>
