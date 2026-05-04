@@ -76,11 +76,8 @@ app.post("/delete/:id", (req, res) => {
 
 const port = 5000;
 
-
 app.listen(port, (err) => {
   if (err) {
-
-
     console.log(err);
   }
 
