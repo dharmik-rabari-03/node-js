@@ -1,5 +1,7 @@
 import express from "express";
 import helmet from "helmet";
+import HttpError from "./middleware/httpsError.js";
+import checkRoll from "./middleware/checkRoll.js";
 
 const app = express();
 
@@ -28,6 +30,14 @@ app.use((req, res) => {
 });
 
 //5. centralized error
+
+app.use((err, res, req, error) => {
+  console.log(error.message);
+
+  res
+    .status(error.statusCode || 500)
+    .json({ message: error.message || "internal server error" });
+});
 
 const port = 5000;
 
