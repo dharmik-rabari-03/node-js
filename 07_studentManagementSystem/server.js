@@ -14,7 +14,7 @@ app.use((req, res) => {
 });
 
 app.use((Error, req, res, next) => {
-  if (res.headerssent) {
+  if (res.headersSent) {
     return next(Error);
   }
 
@@ -32,7 +32,7 @@ async function server() {
     if (!connect) {
       throw new Error("failed to connect DB");
     }
-+
+
     app.listen(port, (err) => {
       if (err) {
         return console.log(err.message);
