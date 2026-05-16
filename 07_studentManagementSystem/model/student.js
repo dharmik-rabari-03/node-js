@@ -1,27 +1,30 @@
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 const studentSchema = new mongoose.Schema({
   name: {
-    Types: string,
+    type: String,
     required: true,
     trim: true,
   },
+
   GRid: {
-    Types: Number,
+    type: Number,
     required: true,
     unique: true,
-    trim: true,
   },
+
   course: {
-    Types: string,
+    type: String,
     required: true,
     enum: ["full stack development", "graphic design", "UI/UX"],
   },
+
   MobileNumber: {
-    Types: Number,
+    type: Number,
     required: true,
-    min: 10,
   },
 });
 
-const student = mongoose.model("student data", studentSchema);
+const student = mongoose.model("student", studentSchema);
+
+export default student;

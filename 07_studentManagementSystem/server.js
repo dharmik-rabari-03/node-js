@@ -2,8 +2,12 @@ import express from "express";
 import httpError from "./middlewares/httpError.js";
 import connectDB from "./config/db.js";
 
+
+import studentRoutes from "./routes/studentRoutes.js";
+
 const app = express();
 app.use(express.json())
+app.use("/student", studentRoutes);
 
 app.get("/", (req, res) => {
   res.send("hello from server");
