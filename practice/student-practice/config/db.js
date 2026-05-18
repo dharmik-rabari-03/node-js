@@ -1,0 +1,19 @@
+import mongoose from "mongoose";
+
+async function dbConnect() {
+
+    try {
+        const connect = await mongoose.connect("mongodb://127.0.0.1:27017/student")
+
+        console.log("db is connnect")
+
+        return connect
+
+    } catch (error) {
+        throw new Error(error)
+    }
+
+
+}
+
+export default dbConnect
