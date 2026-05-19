@@ -49,9 +49,9 @@ async function Delete(req, res, next) {
 
   try {
 
-    const { GRid } = req.params
+    const id = req.params.id
 
-    const find = await student.findOne({ GRid })
+    const find = await student.findByIdAndDelete(id)
 
     if (!find) {
       return res.status(404)
@@ -59,7 +59,7 @@ async function Delete(req, res, next) {
 
     }
 
-    await student.deleteOne({ GRid })
+
 
     res.status(200)
       .json({ success: true, message: "student delated succesfully" })
@@ -73,4 +73,4 @@ async function Delete(req, res, next) {
 
 }
 
-export { AddStudent, getAllStudent,Delete };
+export default { AddStudent, getAllStudent,Delete };
