@@ -23,7 +23,7 @@ const EventModel = new Mongoose.schema(
       required: true,
     },
     EventPoster: {
-      type: [String],
+      type: String,
       required: true,
     },
     EventBanner: {
@@ -34,7 +34,11 @@ const EventModel = new Mongoose.schema(
       type: [String],
       required: true,
     },
-    
+    EventDocument: {
+      type: stringify,
+      required
+    }
+
   },
   { timestamps: true },
 );
@@ -42,6 +46,6 @@ const EventModel = new Mongoose.schema(
 const event =
 
 
-mongoose.model("event", EventModel);
+  mongoose.model("event", EventModel);
 
 export default event;
