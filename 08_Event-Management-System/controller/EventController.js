@@ -44,7 +44,7 @@ const getAllEvent = async (req, res, next) => {
     const GetEvent = await event.find({})
 
     if (GetEvent.length === 0) {
-      res.status(404)
+     return res.status(404)
         .json({ success: false, message: "no event found" })
     }
 
@@ -65,7 +65,7 @@ const GetEventById = async (req, res, next) => {
     const getById = await event.findById(id)
 
     if (!getById) {
-      return next(new HttpError("event not found", 404));
+      return next(new httpError("event not found", 404));
     }
 
     res.status(200)
@@ -83,7 +83,7 @@ const DeleteById = async (req, res, next) => {
     const deletebyid = await event.findById(id)
 
     if (!deletebyid) {
-      return next(new HttpError("event not found", 404));
+      return next(new httpError("event not found", 404));
     }
 
 
@@ -103,7 +103,7 @@ const DeleteById = async (req, res, next) => {
       }
     })
 
-    const deleteEvent = await event.findByIdAndDelete(id)
+    await event.findByIdAndDelete(id);
 
 
     res.status(200)
