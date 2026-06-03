@@ -44,7 +44,7 @@ const getAllEvent = async (req, res, next) => {
     const GetEvent = await event.find({})
 
     if (GetEvent.length === 0) {
-     return res.status(404)
+      return res.status(404)
         .json({ success: false, message: "no event found" })
     }
 
@@ -114,4 +114,87 @@ const DeleteById = async (req, res, next) => {
   }
 }
 
-export default { create, getAllEvent, GetEventById, DeleteById };
+const UpdateEventById = async (req, res, next) => {
+
+  try {
+    const id = req.params.id
+
+    const FindEvent = await event.findById(id)
+
+    if (!FindEvent) {
+      return next(new httpError("event not found", 404))
+    }
+
+    const updates = Object.keys(req.body || {})
+
+    const allowed = [
+      "EventName",
+      "EventDate",
+      "EventVenue",
+      "EventDescription",
+      "TicketPrice",
+
+    ]
+
+    const isAllowedField = updates.every((field) =>
+      allowed.includes(field)
+    )
+
+    if (!isAllowedField) {
+      return next(new httpError("only allowed field can be updated", 400))
+    }
+
+    if (req.files?.EventPoster) {
+      fs.unlinkSync(FindEvent.EventPoster)
+
+      FindEvent.EventPoster = req.files?.EventPoster?.[0]?.path || null
+    }
+
+    if (req.files?.EventBanner) {
+      FindEvent.EventBanner.forEach((file) => {
+        if (fs.existsSync(file)) {
+          fs.unlinkSync(file)
+        }
+      })
+      FindEvent.EventBanner =
+        req.files?.EventBanner?.map((file) => file.path) || null
+    }
+
+    if (req.files?.EventSpeaker) {
+      FindEvent.EventSpeaker.forEach((file) => {
+        if (fs.existsSync(file)) {
+          fs.unlinkSync(file)
+        }
+      })
+      FindEvent.EventSpeaker = req.files?.EventSpeaker?.map((file) => file.path) || null
+    }
+
+    if (req.files?.EventDocument) {
+      fs.unlinkSync(FindEvent.EventDocument)
+
+      FindEvent.EventDocument = req.files?.EventDocument?.[0]?.path || null
+    }
+
+    updates.forEach((update) => {
+      FindEvent[update] = req.body[update]
+    })
+
+    await FindEvent.save()
+
+
+    res.status(200).json({
+      success: true,
+      message: "event data updated successfully",
+      FindEvent,
+    });
+
+  }
+  catch (error) {
+    return next(new httpError(error.message, 500));
+  }
+
+
+}
+
+
+export default { create, getAllEvent, GetEventById, DeleteById, UpdateEventById };

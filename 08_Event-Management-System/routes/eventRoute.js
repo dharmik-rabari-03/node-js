@@ -31,8 +31,32 @@ router.post(
   controller.create,
 );
 
-router.get("/getEvent",controller.getAllEvent)
-router.get("/:id",controller.GetEventById)
+router.get("/getEvent", controller.getAllEvent)
+router.get("/:id", controller.GetEventById)
 
-router.delete("/:id",controller.DeleteById)
+router.delete("/:id", controller.DeleteById)
+
+router.patch(
+  "/:id",
+  upload.fields([
+    {
+      name: "EventPoster",
+      maxCount: 1,
+    },
+    {
+      name: "EventBanner",
+      maxCount: 5,
+    },
+    {
+      name: "EventSpeaker",
+      maxCount: 5,
+    },
+    {
+      name: "EventDocument",
+      maxCount: 5,
+    },
+
+  ]),
+  controller.UpdateEventById
+);
 export default router;
