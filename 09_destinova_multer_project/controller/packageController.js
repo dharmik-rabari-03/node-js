@@ -7,9 +7,6 @@ const add = async (req, res, next) => {
     const { packageName, packagePrice, location, description, duration } =
       req.body;
 
-    console.log(req.body);
-    console.log(req.file);
-
     if (!packageName || !packagePrice || !location || !duration) {
       return next(new HttpError("all the fields are required", 400));
     }
