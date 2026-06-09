@@ -62,34 +62,34 @@ async function getById(req, res, netxt) {
 
 const DeleteById = async (req, res, next) => {
   try {
-    const id = req.params.id;
-    const deletebyid = await event.findById(id);
+    const { id } = req.params;
 
-    if (!deletebyid) {
-      return next(new httpError("event not found", 404));
+    const eventData = await Event.findById(id);
+
+    if (!eventData) {
+      return next(new httpError("Event not found", 404));
     }
 
     const filesToDelete = [
-      deletebyid.eventPoster,
-      ...deletebyid.eventImages,
-      deletebyid.eventDocument,
+      eventData.eventPoster,
+      ...(eventData.eventImages || []),
+      eventData.eventDocument,
     ];
 
     filesToDelete.forEach((file) => {
-      if (fs.existsSync(file)) {
+      if (file && fs.existsSync(file)) {
         fs.unlinkSync(file);
-      } else {
-        return next(new httpError("failed to delete"));
       }
     });
 
-    await event.findByIdAndDelete(id);
+    await Event.findByIdAndDelete(id);
 
-    res
-      .status(200)
-      .json({ success: true, message: "event deleted successfully" });
+    return res.status(200).json({
+      success: true,
+      message: "Event deleted successfully",
+    });
   } catch (error) {
-    next(new httpError(error.message));
+    return next(new httpError(error.message, 500));
   }
 };
 
