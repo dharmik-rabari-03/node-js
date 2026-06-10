@@ -24,7 +24,15 @@ const packageSchema = new mongoose.Schema({
   image: {
     type: String,
   },
-});
+
+  cloudinary_id: {
+    type: String
+  }
+
+},
+  {
+    timestamps: true
+  });
 
 const Package = mongoose.model("package", packageSchema);
 
