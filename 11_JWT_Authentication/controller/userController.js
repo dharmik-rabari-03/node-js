@@ -55,7 +55,7 @@ const loggin = async (req, res, next) => {
       .status(200)
       .json({ success: true, message: "user login succesfull", users });
   } catch (error) {
-    next(new HttpError(error.message, 500));
+    next(new httpError(error.message, 500));
   }
 };
 

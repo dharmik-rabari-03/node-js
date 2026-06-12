@@ -1,6 +1,6 @@
 import express from "express";
 import event from "../model/eventModel.js";
-
+import fs from "fs";
 import httpError from "../middlewares/httpError.js";
 
 const AddEvent = async (req, res, next) => {
@@ -60,4 +60,37 @@ const getById = async (req, res, next) => {
   }
 };
 
-export default { AddEvent, GetAll ,getById};
+const DeleteEvent = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const EventDelete = await event.findById(id);
+
+    if (!EventDelete) {
+      return next(new httpError("no event found with this id", 404));
+    }
+
+    const FilesToDelete = [
+      EventDelete.eventPoster,
+       ...EventDelete.eventImages,
+      EventDelete.eventDocument];
+
+    FilesToDelete.forEach((file) => {
+      if (fs.existsSync(file)) {
+        fs.unlinkSync(file);
+      } else {
+        next(new httpError("failed to delete"));
+      }
+    });
+
+    await event.findByIdAndDelete(id);
+
+    res
+      .status(200)
+      .json({ success: true, message: "event delete successfully" });
+  } catch (error) {
+    next(new httpError(error.message));
+  }
+};
+
+export default { AddEvent, GetAll, getById, DeleteEvent };

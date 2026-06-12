@@ -30,5 +30,6 @@ router.post(
 
 router.get("/GetAll", controller.GetAll);
 router.get("/:id", controller.getById);
+router.delete("/:id",controller.DeleteEvent)
 
 export default router;
