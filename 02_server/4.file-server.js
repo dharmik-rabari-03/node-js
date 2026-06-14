@@ -12,7 +12,7 @@ const server = http.createServer((req, res) => {
 });
 
 const port = 5002;
-3;
+
 server.listen(port, (err) => {
   if (err) {
     console.log(err.message);
