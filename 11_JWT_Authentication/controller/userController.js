@@ -45,18 +45,35 @@ const GetAllUser = async (req, res, next) => {
 const loggin = async (req, res, next) => {
   try {
     const { Email, password } = req.body;
-    const users = await userModel.findByCredentials(Email, password);
 
-    if (!users) {
-      next(new httpError("unable to loggin", 400));
-    }
+    const user = await userModel.findByCredentials(Email, password);
 
-    res
-      .status(200)
-      .json({ success: true, message: "user login succesfull", users });
+    const token = await user.generateAuthToken();
+
+    res.status(200).json({
+      success: true,
+      message: "user login successful",
+      user,
+      token,
+    });
   } catch (error) {
+    console.log(error);
     next(new httpError(error.message, 500));
   }
 };
 
-export default { Add, GetAllUser,loggin };
+const AuthLoggin = async function (req, res, next) {
+  try {
+    const user = req.user;
+
+    if (!user) {
+      return next(new httpError("unable to login", 401));
+    }
+
+    res.status(200).json({ success: true, user });
+  } catch (error) {
+    next(new httpError(error.message));
+  }
+};
+  
+export default { Add, GetAllUser, loggin,AuthLoggin };
