@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post("/add", userController.Add);
 
-router.get("/GetAllUser", userController.GetAllUser);
+router.get("/GetAllUser", auth,userController.GetAllUser);
 
 router.post("/login", userController.loggin);
 
