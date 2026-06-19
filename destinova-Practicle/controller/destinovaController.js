@@ -1,87 +1,137 @@
 import express from "express";
 import packages from "../model/destinovaModel.js";
-import cloudinary from "../config/cloudinary.js";
 import httpError from "../middlewares/httpError.js";
+import cloudinary from "../config/cloudinary.js";
 
-const addPackages = async function (req, res, next) {
+const add = async function (req, res, next) {
   try {
-    const { packageName, packagePrice, Date, destination } = req.body;
+    const { packageName, Date, PackageType, packagePrice } = req.body;
 
-    const NewPackage = new packages({
+    if (!packageName || !Date || !PackageType || !packagePrice) {
+      return next(new httpError("all field are required", 400));
+    }
+
+    const Newpackage = new packages({
       packageName,
-      packagePrice,
       Date,
-      destination,
+      PackageType,
+      packagePrice,
       image: req.file?.path,
-      cloudinary_id: req.file?.filename,
+      cloudinaryid: req.file.filename,
     });
 
-    await NewPackage.save();
+    await Newpackage.save();
 
     res.status(201).json({
       success: true,
-      message: "new package added",
-      NewPackage,
+      message: "Package added successfully",
+      data: Newpackage,
     });
   } catch (error) {
     next(new httpError(error.message));
   }
 };
 
-const GetAllPackage = async (req, res, next) => {
+const getAll = async function (req, res, next) {
   try {
-    const Package = await packages.find();
+    const find = await packages.find();
 
-    if (Package.length <= 0) {
-      return res
-        .status(404)
-        .json({ success: false, message: "no package found" });
+    if (find.length === 0) {
+      return next(new httpError("no package found", 404));
     }
 
-    res.status(200).json({ success: true, message: "package found", Package });
+    res
+      .status(200)
+      .json({ success: true, message: "package found", Data: find });
   } catch (error) {
-    throw next(new httpError(error.message));
+    next(new httpError(error.message));
   }
 };
 
-const GetById = async (req, res, next) => {
+const getById = async function (req, res, next) {
+  try {
+    const id = req.params.id;
+    const find = await packages.findById(id);
+
+    if (!find) {
+      return next(new httpError("no package found", 404));
+    }
+
+    res
+      .status(200)
+      .json({ success: true, message: "package found", Data: find });
+  } catch (error) {
+    next(new httpError(error.message));
+  }
+};
+
+const deletepackage = async function (req, res, next) {
   try {
     const { id } = req.params;
-    const Package = await packages.findById(id);
 
-    if (!Package) {
-      return res
-        .status(404)
-        .json({ success: false, message: "package not found" });
+    const find = await packages.findById(id);
+
+    if (!find) {
+      return next(new httpError("No package found", 404));
     }
+    await cloudinary.uploader.destroy(find.cloudinaryid);
+    await find.deleteOne();
 
-    res.status(200).json({ success: true, message: "package found", Package });
+    res.status(200).json({
+      success: true,
+      message: "Package deleted successfully",
+    });
   } catch (error) {
-    throw next(new httpError(error.message));
+    next(new httpError(error.message, 500));
   }
 };
 
-const DeletePackage = async (req, res, next) => {
-
+const updatePackage = async function (req, res, next) {
   try {
+    const { id } = req.params;
 
-    const id = req.params.id
+    const updatePackages = await packages.findById(id);
 
-    const PackageDelete = await Packages.findById(id)
-
-    if (!PackageDelete) {
-      return res.status(404).json({ succes: false, message: "no package found" })
+    if (!updatePackages) {
+      return next(new httpError("No package found", 404));
     }
 
-    await cloudinary.uploader.destroy(PackageDelete.cloudinary_id)
-    await PackageDelete.deleteOne()
+    const update = Object.keys(req.body);
 
-    res.status(200).json({ success: true, message: "package deleted successfully" })
+    const allowedField = [
+      "packageName",
+      "Date",
+      "PackageType",
+      "packagePrice",
+      "image",
+    ];
+    const isAllowed = update.every((field) => allowedField.includes(field));
+
+    if (!isAllowed) {
+      return next(new httpError("only allowed field can be updated", 400));
+    }
+
+    update.forEach((update) => {
+      updatePackages[update] = req.body[update];
+    });
+
+    if (req.file) {
+      await cloudinary.uploader.destroy(updatePackages.cloudinaryid);
+
+      updatePackages.image = req.file?.path;
+      updatePackages.cloudinaryid = req.file.filename;
+    }
+
+    await updatePackages.save();
+
+    res.status(200).json({
+      success: true,
+      message: "package updated succesfully",
+      date: updatePackages,
+    });
   } catch (error) {
-    next(new httpError(error.message))
+    next(new httpError(error.message, 500));
   }
+};
 
-}
-
-
-export default { addPackages, GetAllPackage, GetById ,DeletePackage};
+export default { add, getAll, getById, deletepackage, updatePackage };
