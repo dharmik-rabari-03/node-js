@@ -1,81 +1,91 @@
+import Model from "../model/userModel.js"
 import httpError from "../middlewares/httpError.js"
-import user from "../model/userModel.js"
 
-const add = async (req, res, next) => {
-
+const Add = async function (req, res, next) {
 
     try {
 
-        const { userName, userEmail, Password } = req.body
-        console.log(req.body);
-        const newUser = new user({
-            userName,
-            userEmail,
-            Password
+        const { name, Email, password } = req.body
+
+        if (!name || !Email || !password) {
+            return new httpError("all Field Are required")
+        }
+
+        const newuser = new Model({
+            name,
+            Email,
+            password
         })
 
-        await newUser.save()
 
-        res.status(201).json({ success: true, message: "new user added", newUser })
+
+        await newuser.save()
+
+        res.status(201).json({ success: true, message: "new user added", newuser })
 
     } catch (error) {
         throw new httpError(error.message)
+
     }
 
 }
 
-const GetAlluser = async function (req, res, next) {
+const getAllUser = async function (req, res, next) {
+
     try {
-        const find = await user.find()
+
+        const find = await Model.find()
 
         if (find.length === 0) {
-            return new httpError("no user found", 404)
+            return new httpError("no user found")
         }
 
-        res.status(200).json({ success: true, message: "user found", find })
+        res.status(200).json({ message: "user data found", total: find.length, date: find })
 
     } catch (error) {
         next(new httpError(error.message))
     }
+
 }
 
-const loggin = async (req, res, next) => {
+const login = async function (req, res, next) {
 
     try {
 
-        const { userEmail, Password } = req.body
+        const { Email, password } = req.body
 
-        const users = await user.findByCredentials(userEmail, Password)
+        const user = await Model.findByCredentials(Email, password)
 
+        const token = await user.generateAuthToken()
 
-        const token = await users.generateAuthToken()
-
-        res.status(200).json({ success: true, message: "user login successfull", users ,token})
-
-        // console.log("controller users", users)
+        res.status(200).json({ success: true, message: "login succesfully", user })
 
     } catch (error) {
         next(new httpError(error.message))
     }
+
 }
 
-const AuthLogin = async function (req, res, next) {
+const authLogin = async function (req,res,next) {
 
     try {
-
 
         const user = req.user
 
         if (!user) {
-            return next(new httpError("unable to login", 401))
+            throw new httpError("Unable to login", 401)
         }
 
-        res.status(200).json({ success: true, user })
+        res.status(200).json({ success: true, message: "auth login succesfull", user })
 
     } catch (error) {
         next(new httpError(error.message))
+
     }
 
 }
 
-export default { add, GetAlluser, loggin, AuthLogin }
+
+
+
+export default { Add, getAllUser, login ,authLogin}

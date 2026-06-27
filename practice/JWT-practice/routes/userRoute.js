@@ -1,11 +1,11 @@
-import express from "express"
-import userController from "../controller/userController.js"
+import express from "express";
+import UserController from "../controller/UserController.js";
+import auth from "../middlewares/auth.js";
+const router = express.Router()
 
-const route = express.Router()
+router.post("/add", UserController.Add)
+router.get("/GetAllUser", UserController.getAllUser)
+router.post("/login", UserController.login)
+router.get("/authlogin", auth, UserController.authLogin)
 
-route.post("/add", userController.add)
-route.get("/AllUser", userController.GetAlluser)
-route.post("/login", userController.loggin)
-route.get("/AuthLogin", userController.AuthLogin)
-
-export default route
+export default router
